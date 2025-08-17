@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chalmette Track Club Pace Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0066cc;
+    }
+
+    .calculator {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .buttons {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>FAST FRIENDS Pace Calculator</h1>
+
+  <div class="calculator">
+    <label for="distance">Distance (miles):</label>
+    <input type="number" id="distance" step="0.01">
+
+    <label>Time:</label>
+    <input type="number" id="hours" placeholder="Hours" min="0">
+    <input type="number" id="minutes" placeholder="Minutes" min="0" max="59">
+
+    <label for="pace">Pace (min/mile):</label>
+    <input type="number" id="pace" step="0.01">
+
+    <div id="result">Fill in any two fields to calculate the third.</div>
+
+    <div class="buttons">
+      <button onclick="clearFields()">Clear</button>
+      <button id="fbShare">Share on Facebook</button>
+    </div>
+  </div>
+
+  <p class="footer-note">
+    💬 Made by Chalmette Track Club — <a href="https://facebook.com/busterm2" target="_blank">Join us on Facebook</a>
+  </p>
+
+  <script>
+    function updateResult() {
+      let distance = parseFloat(document.getElementById('distance').value);
+      let hours = parseFloat(document.getElementById('hours').value) || 0;
+      let minutes = parseFloat(document.getElementById('minutes').value) || 0;
+      let pace = parseFloat(document.getElementById('pace').value);
+
+      let time = hours * 60 + minutes;
+      let filled = [distance, time, pace].filter(v => !isNaN(v) && v > 0).length;
+
+      if (filled < 2) {
+        document.getElementById('result').textContent = "Please fill any two fields with positive values.";
+        return;
+      }
+
+      if (isNaN(distance) || distance <= 0) distance = time / pace;
+      else if (isNaN(time) || time <= 0) time = distance * pace;
+      else if (isNaN(pace) || pace <= 0) pace = time / distance;
+
+      let resultHours = Math.floor(time / 60);
+      let resultMinutes = Math.round(time % 60);
+
+      document.getElementById('result').textContent =
+        `Distance: ${distance.toFixed(2)} miles | Time: ${resultHours}h ${resultMinutes}m | Pace: ${pace.toFixed(2)} min/mile`;
+    }
+
+    function clearFields() {
+      document.getElementById('distance').value = '';
+      document.getElementById('hours').value = '';
+      document.getElementById('minutes').value = '';
+      document.getElementById('pace').value = '';
+      document.getElementById('result').textContent = '';
+    }
+
+    ['distance','hours','minutes','pace'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updateResult);
+    });
+
+    document.getElementById("fbShare").addEventListener("click", function(e) {
+      e.preventDefault();
+      const url = window.location.href;
+      const shareText = "Check out my race pace with the Chalmette Track Club's FAST FRIENDS calculator!";
+      const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(shareText)}`;
+      window.open(fbUrl, "_blank", "width=600,height=400");
+    });
+  </script>
+
+</body>
+</html>
